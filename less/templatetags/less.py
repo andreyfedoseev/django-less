@@ -1,6 +1,6 @@
 from tempfile import NamedTemporaryFile
 from ..cache import get_cache_key, get_hexdigest, get_hashed_mtime
-from ..settings import LESS_BIN, LESS_USE_CACHE,\
+from ..settings import LESS_EXECUTABLE, LESS_USE_CACHE,\
     LESS_CACHE_TIMEOUT, LESS_OUTPUT_DIR
 from ..utils import URLConverter
 from django.conf import settings
@@ -26,7 +26,7 @@ class InlineLessNode(Node):
         source_file = NamedTemporaryFile(delete=False)
         source_file.write(source)
         source_file.close()
-        args = shlex.split("%s %s" % (LESS_BIN, source_file.name))
+        args = shlex.split("%s %s" % (LESS_EXECUTABLE, source_file.name))
 
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, errors = p.communicate()
@@ -82,7 +82,7 @@ def less(path):
     output_path = os.path.join(output_directory, "%s-%s.css" % (base_filename, hashed_mtime))
 
     if not os.path.exists(output_path):
-        command = "%s %s" % (LESS_BIN, encoded_full_path)
+        command = "%s %s" % (LESS_EXECUTABLE, encoded_full_path)
         args = shlex.split(command)
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, errors = p.communicate()
