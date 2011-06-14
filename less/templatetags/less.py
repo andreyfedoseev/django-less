@@ -63,10 +63,11 @@ def do_inlineless(parser, token):
 @register.simple_tag
 def less(path):
 
-    full_path = os.path.join(settings.MEDIA_ROOT, path)
+    encoded_full_path = full_path = os.path.join(settings.MEDIA_ROOT, path)
     if isinstance(full_path, unicode):
         filesystem_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
         encoded_full_path = full_path.encode(filesystem_encoding)
+
     filename = os.path.split(path)[-1]
 
     output_directory = os.path.join(settings.MEDIA_ROOT, LESS_OUTPUT_DIR, os.path.dirname(path))
