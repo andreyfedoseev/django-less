@@ -93,4 +93,10 @@ def less(path):
             compiled_file.write(URLConverter(out, os.path.join(settings.MEDIA_URL, path)).convert())
             compiled_file.close()
 
+            # Remove old files
+            compiled_filename = os.path.split(output_path)[-1]
+            for filename in os.listdir(output_directory):
+                if filename.startswith(base_filename) and filename != compiled_filename:
+                    os.remove(os.path.join(output_directory, filename))
+
     return output_path[len(settings.MEDIA_ROOT):].lstrip("/")
