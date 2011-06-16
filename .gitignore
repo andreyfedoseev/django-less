@@ -1,0 +1,8 @@
+build
+dist
+*.pyc
+*.egg-info
+*.egg
+.idea
+virtualenv
+less/tests/media/LESS_CACHE
