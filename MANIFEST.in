@@ -1,4 +1,5 @@
 include AUTHORS
 include README.rst
+include CHANGES.rst
 include LICENSE
 recursive-include less/tests/media *.less
