@@ -63,14 +63,24 @@ def do_inlineless(parser, token):
 @register.simple_tag
 def less(path):
 
-    encoded_full_path = full_path = os.path.join(settings.MEDIA_ROOT, path)
+    try:
+        STATIC_ROOT = settings.STATIC_ROOT
+    except AttributeError:
+        STATIC_ROOT = settings.MEDIA_ROOT
+
+    try:
+        STATIC_URL = settings.STATIC_URL
+    except AttributeError:
+        STATIC_URL = settings.MEDIA_URL
+        
+    encoded_full_path = full_path = os.path.join(STATIC_ROOT, path)
     if isinstance(full_path, unicode):
         filesystem_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
         encoded_full_path = full_path.encode(filesystem_encoding)
 
     filename = os.path.split(path)[-1]
 
-    output_directory = os.path.join(settings.MEDIA_ROOT, LESS_OUTPUT_DIR, os.path.dirname(path))
+    output_directory = os.path.join(STATIC_ROOT, LESS_OUTPUT_DIR, os.path.dirname(path))
 
     hashed_mtime = get_hashed_mtime(full_path)
 
@@ -90,7 +100,7 @@ def less(path):
             if not os.path.exists(output_directory):
                 os.makedirs(output_directory)
             compiled_file = open(output_path, "w+")
-            compiled_file.write(URLConverter(out, os.path.join(settings.MEDIA_URL, path)).convert())
+            compiled_file.write(URLConverter(out, os.path.join(STATIC_URL, path)).convert())
             compiled_file.close()
 
             # Remove old files
@@ -99,4 +109,4 @@ def less(path):
                 if filename.startswith(base_filename) and filename != compiled_filename:
                     os.remove(os.path.join(output_directory, filename))
 
-    return output_path[len(settings.MEDIA_ROOT):].lstrip("/")
+    return output_path[len(STATIC_ROOT):].lstrip("/")
