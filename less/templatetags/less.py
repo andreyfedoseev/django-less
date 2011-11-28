@@ -6,12 +6,14 @@ from ..utils import URLConverter
 from django.conf import settings
 from django.core.cache import cache
 from django.template.base import Library, Node
+import logging
 import shlex
 import subprocess
 import os
 import sys
 
 
+logger = logging.getLogger("less")
 register = Library()
 
 
@@ -72,7 +74,7 @@ def less(path):
         STATIC_URL = settings.STATIC_URL
     except AttributeError:
         STATIC_URL = settings.MEDIA_URL
-        
+
     encoded_full_path = full_path = os.path.join(STATIC_ROOT, path)
     if isinstance(full_path, unicode):
         filesystem_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
@@ -108,5 +110,8 @@ def less(path):
             for filename in os.listdir(output_directory):
                 if filename.startswith(base_filename) and filename != compiled_filename:
                     os.remove(os.path.join(output_directory, filename))
+        elif errors:
+            logger.error(errors)
+            return path
 
-    return output_path[len(STATIC_ROOT):].lstrip("/")
+    return output_path[len(STATIC_ROOT):].replace(os.sep, '/').lstrip("/")
