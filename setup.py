@@ -13,7 +13,7 @@ CHANGES = read('CHANGES.rst')
 setup(
     name = "django-less",
     packages = find_packages(),
-    version = "0.2",
+    version = "0.3",
     author = "Andrey Fedoseev",
     author_email = "andrey.fedoseev@gmail.com",
     url = "https://github.com/andreyfedoseev/django-less",
@@ -27,6 +27,6 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP',
-    ],    
+    ],
     keywords = ["less", "css"],
 )
