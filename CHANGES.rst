@@ -4,7 +4,7 @@ Changes
 0.3
 ---
 
-- Log coffeescript compilation errors
+- Log LESS compilation errors
 - Fixed bug with paths on Windows
 
 
