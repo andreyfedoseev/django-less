@@ -129,5 +129,19 @@ class LessTestCase(TestCase):
 }"""
         self.assertEquals(compiled_content, compiled)
 
+    def test_imports(self):
+
+        template = Template("""
+        {% load less %}
+        {% less "styles/import.less" %}
+        """)
+        compiled_filename = template.render(self._get_request_context()).strip()
+        compiled_path = os.path.join(self.django_settings.STATIC_ROOT, compiled_filename)
+        compiled_content = open(compiled_path).read().strip()
+        compiled = """h1 {
+  color: red;
+}"""
+        self.assertEquals(compiled_content, compiled)
+
 if __name__ == '__main__':
     main()
