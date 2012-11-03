@@ -1,19 +1,20 @@
 from tempfile import NamedTemporaryFile
 from ..cache import get_cache_key, get_hexdigest, get_hashed_mtime
+from ..utils import compile_less, STATIC_ROOT
 from ..settings import LESS_EXECUTABLE, LESS_USE_CACHE,\
-    LESS_CACHE_TIMEOUT, LESS_OUTPUT_DIR
-from ..utils import URLConverter
+    LESS_CACHE_TIMEOUT, LESS_OUTPUT_DIR, LESS_DEVMODE, LESS_DEVMODE_WATCH_DIRS
 from django.conf import settings
 from django.core.cache import cache
 from django.template.base import Library, Node
 import logging
-import shlex
 import subprocess
 import os
 import sys
 
 
 logger = logging.getLogger("less")
+
+
 register = Library()
 
 
@@ -28,7 +29,7 @@ class InlineLessNode(Node):
         source_file = NamedTemporaryFile(delete=False)
         source_file.write(source)
         source_file.close()
-        args = shlex.split("%s %s" % (LESS_EXECUTABLE, source_file.name))
+        args = [LESS_EXECUTABLE, source_file.name]
 
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, errors = p.communicate()
@@ -62,56 +63,63 @@ def do_inlineless(parser, token):
     return InlineLessNode(nodelist)
 
 
+def less_paths(path):
+
+    # while developing it is more confortable
+    # searching for the less files rather then
+    # doing collectstatics all the time
+    if settings.DEBUG:
+        for sfdir in settings.STATICFILES_DIRS:
+            prefix = None
+            if isinstance(sfdir, (tuple, list)):
+                prefix, sfdir = sfdir
+            if prefix:
+                if not path.startswith(prefix):
+                    continue
+                input_file = os.path.join(sfdir, path[len(prefix):].lstrip(os.sep))
+            else:
+                input_file = os.path.join(sfdir, path)
+            if os.path.exists(input_file):
+                output_dir = os.path.join(STATIC_ROOT, LESS_OUTPUT_DIR, os.path.dirname(path))
+                file_name = os.path.basename(path)
+                return input_file, file_name, output_dir
+
+    full_path = os.path.join(STATIC_ROOT, path)
+    file_name = os.path.split(path)[-1]
+
+    output_dir = os.path.join(STATIC_ROOT, LESS_OUTPUT_DIR, os.path.dirname(path))
+
+    return full_path, file_name, output_dir
+
+
 @register.simple_tag
 def less(path):
 
-    try:
-        STATIC_ROOT = settings.STATIC_ROOT
-    except AttributeError:
-        STATIC_ROOT = settings.MEDIA_ROOT
+    logger.info("processing file %s" % path)
 
-    try:
-        STATIC_URL = settings.STATIC_URL
-    except AttributeError:
-        STATIC_URL = settings.MEDIA_URL
+    full_path, file_name, output_dir = less_paths(path)
+    base_file_name = os.path.splitext(file_name)[0]
 
-    encoded_full_path = full_path = os.path.join(STATIC_ROOT, path)
+    if LESS_DEVMODE and any(map(lambda watched_dir: full_path.startswith(watched_dir), LESS_DEVMODE_WATCH_DIRS)):
+        return os.path.join(os.path.dirname(path), "%s.css" % base_file_name)
+
+    hashed_mtime = get_hashed_mtime(full_path)
+    output_file = "%s-%s.css" % (base_file_name, hashed_mtime)
+    output_path = os.path.join(output_dir, output_file)
+
+    encoded_full_path = full_path
     if isinstance(full_path, unicode):
         filesystem_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
         encoded_full_path = full_path.encode(filesystem_encoding)
 
-    filename = os.path.split(path)[-1]
-
-    output_directory = os.path.join(STATIC_ROOT, LESS_OUTPUT_DIR, os.path.dirname(path))
-
-    hashed_mtime = get_hashed_mtime(full_path)
-
-    if filename.endswith(".less"):
-        base_filename = filename[:-5]
-    else:
-        base_filename = filename
-
-    output_path = os.path.join(output_directory, "%s-%s.css" % (base_filename, hashed_mtime))
-
     if not os.path.exists(output_path):
-        command = "%s %s" % (LESS_EXECUTABLE, encoded_full_path)
-        args = shlex.split(command)
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, errors = p.communicate()
-        if out:
-            if not os.path.exists(output_directory):
-                os.makedirs(output_directory)
-            compiled_file = open(output_path, "w+")
-            compiled_file.write(URLConverter(out, os.path.join(STATIC_URL, path)).convert())
-            compiled_file.close()
-
-            # Remove old files
-            compiled_filename = os.path.split(output_path)[-1]
-            for filename in os.listdir(output_directory):
-                if filename.startswith(base_filename) and filename != compiled_filename:
-                    os.remove(os.path.join(output_directory, filename))
-        elif errors:
-            logger.error(errors)
+        if not compile_less(encoded_full_path, output_path, path):
             return path
 
-    return output_path[len(STATIC_ROOT):].replace(os.sep, '/').lstrip("/")
+        # Remove old files
+        compiled_filename = os.path.split(output_path)[-1]
+        for filename in os.listdir(output_dir):
+            if filename.startswith(base_file_name) and filename != compiled_filename:
+                os.remove(os.path.join(output_dir, filename))
+
+    return os.path.join(LESS_OUTPUT_DIR, os.path.dirname(path), output_file)

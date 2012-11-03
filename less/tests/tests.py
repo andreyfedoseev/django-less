@@ -1,4 +1,5 @@
 from unittest import main, TestCase
+from django.http import HttpRequest
 from django.template.base import Template
 from django.template.context import RequestContext
 import os
@@ -23,6 +24,9 @@ class LessTestCase(TestCase):
         if os.path.exists(output_dir):
             shutil.rmtree(output_dir)
 
+    def _get_request_context(self):
+        return RequestContext(HttpRequest())
+
     def test_inline_less(self):
         template = Template("""
         {% load less %}
@@ -36,7 +40,7 @@ class LessTestCase(TestCase):
         rendered = """#bordered {
   border: 2px;
 }"""
-        self.assertEqual(template.render(RequestContext({})).strip(), rendered)
+        self.assertEqual(template.render(self._get_request_context()).strip(), rendered)
 
     def test_external_less(self):
 
@@ -45,13 +49,13 @@ class LessTestCase(TestCase):
         {% less "styles/test.less" %}
         """)
         compiled_filename_re = re.compile(r"LESS_CACHE/styles/test-[a-f0-9]{12}.css")
-        compiled_filename = template.render(RequestContext({})).strip()
+        compiled_filename = template.render(self._get_request_context()).strip()
         self.assertTrue(bool(compiled_filename_re.match(compiled_filename)))
 
         compiled_path = os.path.join(self.django_settings.MEDIA_ROOT, compiled_filename)
         compiled_content = open(compiled_path).read().strip()
         compiled = """#header h1 {
-  background-image: url('/media/images/header.png');
+  background-image: url('/static/images/header.png');
 }"""
         self.assertEquals(compiled_content, compiled)
 
@@ -60,7 +64,7 @@ class LessTestCase(TestCase):
         os.utime(source_path, None)
 
         # The modification time is cached so the compiled file is not updated
-        compiled_filename_2 = template.render(RequestContext({})).strip()
+        compiled_filename_2 = template.render(self._get_request_context()).strip()
         self.assertTrue(bool(compiled_filename_re.match(compiled_filename_2)))
         self.assertEquals(compiled_filename, compiled_filename_2)
 
@@ -68,7 +72,7 @@ class LessTestCase(TestCase):
         time.sleep(self.django_settings.LESS_MTIME_DELAY)
 
         # Now the file is re-compiled
-        compiled_filename_3 = template.render(RequestContext({})).strip()
+        compiled_filename_3 = template.render(self._get_request_context()).strip()
         self.assertTrue(bool(compiled_filename_re.match(compiled_filename_3)))
         self.assertNotEquals(compiled_filename, compiled_filename_3)
 
@@ -78,6 +82,37 @@ class LessTestCase(TestCase):
                                                          compiled_filename_3))
         self.assertEquals(len(os.listdir(compiled_file_dir)), 1)
 
+    def test_lookup_in_staticfiles_dirs(self):
+
+        template = Template("""
+        {% load less %}
+        {% less "another_test.less" %}
+        """)
+        compiled_filename_re = re.compile(r"LESS_CACHE/another_test-[a-f0-9]{12}.css")
+        compiled_filename = template.render(self._get_request_context()).strip()
+        self.assertTrue(bool(compiled_filename_re.match(compiled_filename)))
+
+        compiled_path = os.path.join(self.django_settings.STATIC_ROOT, compiled_filename)
+        compiled_content = open(compiled_path).read().strip()
+        compiled = """#header-from-staticfiles-dir h1 {
+  color: red;
+}"""
+        self.assertEquals(compiled_content, compiled)
+
+        template = Template("""
+        {% load less %}
+        {% less "prefix/another_test.less" %}
+        """)
+        compiled_filename_re = re.compile(r"LESS_CACHE/prefix/another_test-[a-f0-9]{12}.css")
+        compiled_filename = template.render(self._get_request_context()).strip()
+        self.assertTrue(bool(compiled_filename_re.match(compiled_filename)))
+
+        compiled_path = os.path.join(self.django_settings.STATIC_ROOT, compiled_filename)
+        compiled_content = open(compiled_path).read().strip()
+        compiled = """#header-from-staticfiles-dir-with-prefix h1 {
+  color: red;
+}"""
+        self.assertEquals(compiled_content, compiled)
 
 if __name__ == '__main__':
     main()

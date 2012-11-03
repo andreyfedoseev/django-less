@@ -6,3 +6,4 @@ dist
 .idea
 virtualenv
 less/tests/media/LESS_CACHE
+/less/tests/static/LESS_CACHE/
