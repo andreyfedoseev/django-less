@@ -4,8 +4,9 @@ from ..utils import compile_less, STATIC_ROOT
 from ..settings import LESS_EXECUTABLE, LESS_USE_CACHE,\
     LESS_CACHE_TIMEOUT, LESS_OUTPUT_DIR, LESS_DEVMODE, LESS_DEVMODE_WATCH_DIRS
 from django.conf import settings
+from django.contrib.staticfiles import finders
 from django.core.cache import cache
-from django.template.base import Library, Node
+from django.template.base import Library, Node, TemplateSyntaxError
 import logging
 import subprocess
 import os
@@ -65,28 +66,18 @@ def do_inlineless(parser, token):
 
 def less_paths(path):
 
-    # while developing it is more confortable
-    # searching for the less files rather then
-    # doing collectstatics all the time
-    if settings.DEBUG:
-        for sfdir in settings.STATICFILES_DIRS:
-            prefix = None
-            if isinstance(sfdir, (tuple, list)):
-                prefix, sfdir = sfdir
-            if prefix:
-                if not path.startswith(prefix):
-                    continue
-                input_file = os.path.join(sfdir, path[len(prefix):].lstrip(os.sep))
-            else:
-                input_file = os.path.join(sfdir, path)
-            if os.path.exists(input_file):
-                output_dir = os.path.join(STATIC_ROOT, LESS_OUTPUT_DIR, os.path.dirname(path))
-                file_name = os.path.basename(path)
-                return input_file, file_name, output_dir
-
     full_path = os.path.join(STATIC_ROOT, path)
-    file_name = os.path.split(path)[-1]
 
+    if settings.DEBUG and not os.path.exists(full_path):
+        # while developing it is more confortable
+        # searching for the less files rather then
+        # doing collectstatics all the time
+        full_path = finders.find(path)
+
+        if full_path is None:
+            raise TemplateSyntaxError("Can't find staticfile named: {}".format(path))
+
+    file_name = os.path.split(path)[-1]
     output_dir = os.path.join(STATIC_ROOT, LESS_OUTPUT_DIR, os.path.dirname(path))
 
     return full_path, file_name, output_dir
