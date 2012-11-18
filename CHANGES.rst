@@ -1,6 +1,12 @@
 Changes
 *******
 
+0.5
+----
+
+- Switch to staticfiles.finders when looking up the files in DEBUG mode.
+
+
 0.4
 ----
 
