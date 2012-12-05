@@ -31,7 +31,7 @@ class URLConverter(object):
         return "url('%s')" % full_url
 
     def convert(self):
-        return self.URL_PATTERN.sub(self.convert_url, self.content)
+        return self.URL_PATTERN.sub(self.convert_url, self.content.decode('utf8'))
 
 
 def compile_less(input, output, less_path):
@@ -52,7 +52,8 @@ def compile_less(input, output, less_path):
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
     compiled_file = open(output, "w+")
-    compiled_file.write(URLConverter(out, os.path.join(STATIC_URL, less_path)).convert())
+    compiled_css = URLConverter(out, os.path.join(STATIC_URL, less_path)).convert()
+    compiled_file.write(compiled_css.encode('utf8'))
     compiled_file.close()
 
     return True
