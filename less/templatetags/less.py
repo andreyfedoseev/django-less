@@ -36,9 +36,9 @@ class InlineLessNode(Node):
         out, errors = p.communicate()
         os.remove(source_file.name)
         if out:
-            return out.decode("utf-8")
+            return out.decode(settings.FILE_CHARSET)
         elif errors:
-            return errors.decode("utf-8")
+            return errors.decode(settings.FILE_CHARSET)
 
         return u""
 

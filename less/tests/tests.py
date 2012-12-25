@@ -126,6 +126,7 @@ class LessTestCase(TestCase):
         compiled_content = open(compiled_path).read().strip()
         compiled = """.external_link:first-child:before {
   content: "Zobacz także:";
+  background: url('/static/styles/картинка.png');
 }"""
         self.assertEquals(compiled_content, compiled)
 
