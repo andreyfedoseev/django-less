@@ -1,8 +1,8 @@
 Changes
 *******
 
-Dev
----
+0.5.1
+-----
 
 - Fix unicodedecodeerror with non ascii in less file
 

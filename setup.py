@@ -13,7 +13,7 @@ CHANGES = read('CHANGES.rst')
 setup(
     name = "django-less",
     packages = find_packages(),
-    version = "0.5",
+    version = "0.5.1",
     author = "Andrey Fedoseev",
     author_email = "andrey.fedoseev@gmail.com",
     url = "https://github.com/andreyfedoseev/django-less",
