@@ -76,7 +76,7 @@ renders to
     <link rel="stylesheet" href="/media/LESS_CACHE/path/to/styles-91ce1f66f583.css" />
 
 Note that by default compiled files are saved into ``LESS_CACHE`` folder under your ``STATIC_ROOT`` (or ``MEDIA_ROOT`` if you have no ``STATIC_ROOT`` in your settings).
-You can change this folder name with ``LESS_OUTPUT_DIR`` setting.
+You can change this folder with ``LESS_ROOT`` and ``LESS_OUTPUT_DIR`` settings.
 
 Note that all relative URLs in your stylesheet are converted to absolute URLs using your ``STATIC_URL`` setting.
 
@@ -87,8 +87,11 @@ Settings
 ``LESS_EXECUTABLE``
     Path to LESS compiler executable. Default: ``"lessc"``.
 
+``LESS_ROOT``
+    Controls the absolute file path that and compiled files will be written to. Default: ``STATIC_ROOT``.
+
 ``LESS_OUTPUT_DIR``
-    Output directory for compiled external stylesheets. It's relative to ``STATIC_ROOT``. Default: ``"LESS_CACHE"``.
+    Controls the directory inside ``LESS_ROOT`` that compiled files will be written to. ``"LESS_CACHE"``.
     
 ``LESS_USE_CACHE``
     Whether to use cache for inline styles. Default: ``True``.

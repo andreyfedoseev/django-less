@@ -1,8 +1,9 @@
 from tempfile import NamedTemporaryFile
 from ..cache import get_cache_key, get_hexdigest, get_hashed_mtime
-from ..utils import compile_less, STATIC_ROOT
+from ..utils import compile_less
 from ..settings import LESS_EXECUTABLE, LESS_USE_CACHE,\
-    LESS_CACHE_TIMEOUT, LESS_OUTPUT_DIR, LESS_DEVMODE, LESS_DEVMODE_WATCH_DIRS
+    LESS_CACHE_TIMEOUT, LESS_ROOT, LESS_OUTPUT_DIR, LESS_DEVMODE,\
+    LESS_DEVMODE_WATCH_DIRS
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.core.cache import cache
@@ -11,6 +12,9 @@ import logging
 import subprocess
 import os
 import sys
+
+
+STATIC_ROOT = getattr(settings, "STATIC_ROOT", getattr(settings, "MEDIA_ROOT"))
 
 
 logger = logging.getLogger("less")
@@ -25,8 +29,6 @@ class InlineLessNode(Node):
         self.nodelist = nodelist
 
     def compile(self, source):
-
-
         source_file = NamedTemporaryFile(delete=False)
         source_file.write(source)
         source_file.close()
@@ -78,7 +80,7 @@ def less_paths(path):
             raise TemplateSyntaxError("Can't find staticfile named: {}".format(path))
 
     file_name = os.path.split(path)[-1]
-    output_dir = os.path.join(STATIC_ROOT, LESS_OUTPUT_DIR, os.path.dirname(path))
+    output_dir = os.path.join(LESS_ROOT, LESS_OUTPUT_DIR, os.path.dirname(path))
 
     return full_path, file_name, output_dir
 
