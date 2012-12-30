@@ -1,7 +1,7 @@
 Changes
 *******
 
-Dev
+0.6
 ----
 
 - Add LESS_ROOT setting
