@@ -91,7 +91,7 @@ Settings
     Controls the absolute file path that and compiled files will be written to. Default: ``STATIC_ROOT``.
 
 ``LESS_OUTPUT_DIR``
-    Controls the directory inside ``LESS_ROOT`` that compiled files will be written to. ``"LESS_CACHE"``.
+    Controls the directory inside ``LESS_ROOT`` that compiled files will be written to. Default: ``"LESS_CACHE"``.
     
 ``LESS_USE_CACHE``
     Whether to use cache for inline styles. Default: ``True``.
