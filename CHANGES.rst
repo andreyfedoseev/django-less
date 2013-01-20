@@ -1,7 +1,7 @@
 Changes
 *******
 
-Dev
+0.7
 ----
 
 - Add staticfiles finder to serve compiled files in dev mode
