@@ -12,6 +12,16 @@ Installation
    `LESS official site <http://lesscss.org>`_ for details.
 3. Optionally, you can specify the full path to ``lessc`` executable with ``LESS_EXECUTABLE`` setting.
    By default it's set to ``lessc``.
+4. In case you use Django’s staticfiles contrib app you have to add django-less’s file finder to the ``STATICFILES_FINDERS`` setting, for example :
+
+::
+
+    STATICFILES_FINDERS = (
+        'django.contrib.staticfiles.finders.FileSystemFinder',
+        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+        # other finders..
+        'less.finders.LessFinder',
+    )
 
 Example Usage
 *************
@@ -22,7 +32,7 @@ Inline
 ::
 
     {% load less %}
-    
+
     <style>
       {% inlineless %}
         #header {
@@ -41,7 +51,7 @@ Inline
 
 renders to
 
-:: 
+::
 
       <style>
         #header h1 {
@@ -66,9 +76,9 @@ External file
 ::
 
     {% load less %}
-    
+
     <link rel="stylesheet" href="{{ STATIC_URL}}{% less "path/to/styles.less" %}" />
-    
+
 renders to
 
 ::
@@ -92,12 +102,12 @@ Settings
 
 ``LESS_OUTPUT_DIR``
     Controls the directory inside ``LESS_ROOT`` that compiled files will be written to. Default: ``"LESS_CACHE"``.
-    
+
 ``LESS_USE_CACHE``
     Whether to use cache for inline styles. Default: ``True``.
-    
+
 ``LESS_CACHE_TIMEOUT``
     Cache timeout for inline styles (in seconds). Default: 30 days.
-    
+
 ``LESS_MTIME_DELAY``
     Cache timeout for reading the modification time of external stylesheets (in seconds). Default: 10 seconds.
