@@ -1,13 +1,13 @@
 from less.settings import LESS_MTIME_DELAY
 from django.core.cache import cache
 from django.utils.encoding import smart_str
-from django.utils.hashcompat import md5_constructor
+from hashlib import md5
 import os.path
 import socket
 
 
 def get_hexdigest(plaintext, length=None):
-    digest = md5_constructor(smart_str(plaintext)).hexdigest()
+    digest = md5(smart_str(plaintext)).hexdigest()
     if length:
         return digest[:length]
     return digest
