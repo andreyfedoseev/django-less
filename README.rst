@@ -98,7 +98,7 @@ Settings
     Path to LESS compiler executable. Default: ``"lessc"``.
 
 ``LESS_ROOT``
-    Controls the absolute file path that and compiled files will be written to. Default: ``STATIC_ROOT``.
+    Controls the absolute file path that compiled files will be written to. Default: ``STATIC_ROOT``.
 
 ``LESS_OUTPUT_DIR``
     Controls the directory inside ``LESS_ROOT`` that compiled files will be written to. Default: ``"LESS_CACHE"``.
