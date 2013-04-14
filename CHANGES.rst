@@ -4,6 +4,7 @@ Changes
 0.7.1
 ------
 
+- Use hashlib instead of django.utils.hashcompat which is deprecated in Django 1.5
 - Add `shell=True` to Popen arguments when running on Windows.
 
 
