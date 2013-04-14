@@ -1,6 +1,12 @@
 Changes
 *******
 
+Dev
+----
+
+- Add `shell=True` to Popen arguments when running on Windows.
+
+
 0.7
 ----
 

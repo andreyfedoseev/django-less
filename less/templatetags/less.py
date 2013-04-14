@@ -34,7 +34,14 @@ class InlineLessNode(Node):
         source_file.close()
         args = [LESS_EXECUTABLE, source_file.name]
 
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        popen_kwargs = dict(
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        if os.name == "nt":
+            popen_kwargs["shell"] = True
+
+        p = subprocess.Popen(args, **popen_kwargs)
         out, errors = p.communicate()
         os.remove(source_file.name)
         if out:

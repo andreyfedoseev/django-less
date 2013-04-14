@@ -40,7 +40,13 @@ def compile_less(input, output, less_path):
         os.makedirs(less_root)
 
     args = [LESS_EXECUTABLE, input]
-    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    popen_kwargs = dict(
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if os.name == "nt":
+        popen_kwargs["shell"] = True
+    p = subprocess.Popen(args, **popen_kwargs)
     out, errors = p.communicate()
 
     if errors:
