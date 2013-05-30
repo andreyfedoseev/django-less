@@ -41,7 +41,6 @@ def compile_less(input, output, less_path):
         os.makedirs(less_root)
 
     args = [LESS_EXECUTABLE] + LESS_OPTIONS + [input]
-    print args
     popen_kwargs = dict(
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
