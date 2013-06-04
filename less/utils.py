@@ -1,7 +1,7 @@
 from less.settings import LESS_EXECUTABLE, LESS_ROOT, LESS_OUTPUT_DIR
 from django.conf import settings
 import logging
-import posixpath
+import urlparse
 import re
 import os
 import subprocess
@@ -20,14 +20,15 @@ class URLConverter(object):
     def __init__(self, content, source_path):
         self.content = content
         self.source_dir = os.path.dirname(source_path)
+        if not self.source_dir.endswith('/'):
+            self.source_dir = self.source_dir + '/'
 
     def convert_url(self, matchobj):
         url = matchobj.group(1)
         url = url.strip(' \'"')
         if url.startswith(('http://', 'https://', '/', 'data:')):
             return "url('%s')" % url
-        full_url = posixpath.normpath("/".join([self.source_dir, url]))
-        return "url('%s')" % full_url
+        return "url('%s')" % urlparse.urljoin(self.source_dir, url)
 
     def convert(self):
         return self.URL_PATTERN.sub(self.convert_url, self.content)
