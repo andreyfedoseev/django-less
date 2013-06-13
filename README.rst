@@ -97,6 +97,9 @@ Settings
 ``LESS_EXECUTABLE``
     Path to LESS compiler executable. Default: ``"lessc"``.
 
+``LESS_OPTIONS``
+    Options sent to ``lessc``. Default: ``[]``.
+
 ``LESS_ROOT``
     Controls the absolute file path that compiled files will be written to. Default: ``STATIC_ROOT``.
 
