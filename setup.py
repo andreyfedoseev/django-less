@@ -9,17 +9,16 @@ def read(fname):
 README = read('README.rst')
 CHANGES = read('CHANGES.rst')
 
-
 setup(
-    name = "django-less",
-    packages = find_packages(),
-    version = "0.7.1",
-    author = "Andrey Fedoseev",
-    author_email = "andrey.fedoseev@gmail.com",
-    url = "https://github.com/andreyfedoseev/django-less",
-    description = "Django template tags to compile LESS into CSS",
-    long_description = "\n\n".join([README, CHANGES]),
-    classifiers = [
+    name="django-less",
+    packages=find_packages(),
+    version="0.7.2",
+    author="Andrey Fedoseev",
+    author_email="andrey.fedoseev@gmail.com",
+    url="https://github.com/andreyfedoseev/django-less",
+    description="Django template tags to compile LESS into CSS",
+    long_description="\n\n".join([README, CHANGES]),
+    classifiers=[
         'Development Status :: 4 - Beta',
         'Framework :: Django',
         'Intended Audience :: Developers',
@@ -28,5 +27,5 @@ setup(
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP',
     ],
-    keywords = ["less", "css"],
+    keywords=["less", "css"],
 )

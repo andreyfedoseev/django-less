@@ -1,8 +1,8 @@
 Changes
 *******
 
-Dev
-----
+0.7.2
+------
 
 - Add LESS_OPTIONS config variable.
 - Use urlparse instead of posixpath to leave double slashes in urls.
