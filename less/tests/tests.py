@@ -3,6 +3,7 @@ from unittest import main, TestCase
 from django.http import HttpRequest
 from django.template.base import Template
 from django.template.context import RequestContext
+from less import LessException
 import os
 import re
 import time
@@ -16,6 +17,7 @@ class LessTestCase(TestCase):
 
     def setUp(self):
         from django.conf import settings as django_settings
+
         self.django_settings = django_settings
 
         output_dir = os.path.join(self.django_settings.MEDIA_ROOT,
@@ -143,6 +145,18 @@ class LessTestCase(TestCase):
   color: red;
 }"""
         self.assertEquals(compiled_content, compiled)
+
+    def test_less_exception(self):
+        template = Template("""
+        {% load less %}
+        {% less "styles/invalid.less" %}
+        """)
+
+        self.assertRaises(
+            LessException,
+            lambda: template.render(self._get_request_context())
+        )
+
 
 if __name__ == '__main__':
     main()

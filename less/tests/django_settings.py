@@ -34,3 +34,5 @@ LOGGING = {
         },
     }
 }
+
+SECRET_KEY = "secret"

@@ -113,8 +113,7 @@ def less(path):
         encoded_full_path = full_path.encode(filesystem_encoding)
 
     if not os.path.exists(output_path):
-        if not compile_less(encoded_full_path, output_path, path):
-            return path
+        compile_less(encoded_full_path, output_path, path)
 
         # Remove old files
         compiled_filename = os.path.split(output_path)[-1]

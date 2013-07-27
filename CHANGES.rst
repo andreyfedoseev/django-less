@@ -1,6 +1,12 @@
 Changes
 *******
 
+Dev
+----
+
+- Raise exception on compilation errors.
+
+
 0.7.1
 ------
 

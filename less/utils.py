@@ -1,3 +1,4 @@
+from less import LessException
 from less.settings import LESS_EXECUTABLE, LESS_ROOT, LESS_OUTPUT_DIR
 from django.conf import settings
 import logging
@@ -51,7 +52,7 @@ def compile_less(input, output, less_path):
 
     if errors:
         logger.error(errors)
-        return False
+        raise LessException(errors)
 
     output_directory = os.path.dirname(output)
     if not os.path.exists(output_directory):
@@ -63,5 +64,3 @@ def compile_less(input, output, less_path):
     compiled_file = open(output, "w+")
     compiled_file.write(compiled_css.encode(settings.FILE_CHARSET))
     compiled_file.close()
-
-    return True
