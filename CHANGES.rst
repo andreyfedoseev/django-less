@@ -4,6 +4,8 @@ Changes
 Dev
 ----
 
+- Add LESS_OPTIONS config variable.
+- Use urlparse instead of posixpath to leave double slashes in urls.
 - Raise exception on compilation errors.
 
 
