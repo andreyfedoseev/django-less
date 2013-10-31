@@ -1,3 +1,8 @@
+**THIS PACKAGE IS NOT MAINTAINED.**
+
+Please use `django-static-precompiler <https://github.com/andreyfedoseev/django-static-precompiler>`_
+
+
 Django LESS
 ===================
 
